@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      background-image: url('mathscalculations.jpeg'); /* Set your background image URL here */
+      background-size: cover; /* Ensures the image covers the entire background */
+      background-position: center; /* Centers the background image */
+      background-repeat: no-repeat; /* Prevents the image from repeating */
+      background-color: #f0f0f0; /* Fallback color in case image doesn't load */
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2.5rem;
+      color: white; /* Set heading color to white */
+    }
+
+    .calculator {
+      width: 300px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+      color: #f0f0f0;
+    }
+
+    .display {
+      background-color: #222;
+      color: white;
+      font-size: 2rem;
+      text-align: right;
+      padding: 20px;
+      height: 70px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+    }
+
+    .button {
+      padding: 20px;
+      font-size: 1.5rem;
+      background-color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .button:hover {
+      background-color: #ddd;
+    }
+
+    .operator {
+      background-color: #f7b731;
+    }
+
+    .operator:hover {
+      background-color: #e3a620;
+    }
+
+    .equal {
+      grid-column: span 2;
+      background-color: #20bf6b;
+    }
+
+    .equal:hover {
+      background-color: #1d9e5c;
+    }
+
+    .clear {
+      background-color: #eb3b5a;
+    }
+
+    .clear:hover {
+      background-color: #d8334e;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Calculator</h1> <!-- Added heading -->
+
+  <div class="calculator">
+    <div class="display" id="display">0</div>
+    <div class="buttons">
+      <button class="button clear" value="clear">C</button>
+      <button class="button" value="7">7</button>
+      <button class="button" value="8">8</button>
+      <button class="button" value="9">9</button>
+      <button class="button operator" value="/">÷</button>
+      
+      <button class="button" value="4">4</button>
+      <button class="button" value="5">5</button>
+      <button class="button" value="6">6</button>
+      <button class="button operator" value="*">×</button>
+      
+      <button class="button" value="1">1</button>
+      <button class="button" value="2">2</button>
+      <button class="button" value="3">3</button>
+      <button class="button operator" value="-">−</button>
+      
+      <button class="button" value="0">0</button>
+      <button class="button" value=".">.</button>
+      <button class="button equal" value="=">=</button>
+      <button class="button operator" value="+">+</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+    const buttons = document.querySelectorAll('.button');
+
+    let currentInput = '0'; // Set initial input to '0'
+    let previousInput = '';
+    let operator = null;
+    let resultDisplayed = false; // To track if a result is already displayed
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        const value = button.value;
+
+        // Clear input when 'C' is pressed
+        if (value === 'clear') {
+          currentInput = '0';
+          previousInput = '';
+          operator = null;
+          display.textContent = currentInput;
+          resultDisplayed = false;
+        } 
+        // Perform calculation when '=' is pressed
+        else if (value === '=' && operator && previousInput !== '' && currentInput !== '') {
+          currentInput = operate(previousInput, currentInput, operator);
+          display.textContent = currentInput;
+          previousInput = ''; // Clear previous input
+          operator = null;
+          resultDisplayed = true; // Set flag to true after displaying result
+        } 
+        // Handle operator input
+        else if (['+', '-', '*', '/'].includes(value)) {
+          if (!resultDisplayed && currentInput !== '') {
+            previousInput = currentInput;
+            currentInput = '';
+            operator = value;
+          } else {
+            operator = value; // If result is displayed, allow chaining operations
+            previousInput = currentInput;
+            currentInput = '';
+            resultDisplayed = false;
+          }
+        } 
+        // Handle decimal point
+        else if (value === '.' && !currentInput.includes('.')) {
+          currentInput += value;
+          display.textContent = currentInput;
+        } 
+        // Handle numeric input
+        else if (!isNaN(value)) {
+          if (currentInput === '0' || resultDisplayed) {
+            currentInput = value; // Replace '0' or result with new number
+            resultDisplayed = false;
+          } else {
+            currentInput += value;
+          }
+          display.textContent = currentInput;
+        }
+      });
+    });
+
+    function operate(a, b, operator) {
+      a = parseFloat(a);
+      b = parseFloat(b);
+      switch (operator) {
+        case '+':
+          return (a + b).toString();
+        case '-':
+          return (a - b).toString();
+        case '*':
+          return (a * b).toString();
+        case '/':
+          return (b !== 0 ? (a / b).toString() : 'Error'); // Prevent division by zero
+        default:
+          return b;
+      }
+    }
+  </script>
+
+</body>
+</html>
